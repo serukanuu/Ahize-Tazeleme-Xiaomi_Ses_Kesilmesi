@@ -1,44 +1,48 @@
-# ahize-tazeleme_sesinizkesilmesin
 # Ahize Tazeleme Sistemi (Earpiece Audio Fix & Monitor)
 
 Android cihazlarda (özellikle agresif arka plan yönetimine sahip sistemlerde) VoLTE veya normal telefon görüşmeleri sırasında ahize sesinin aniden kesilmesi, hoparlöre düşmesi veya sessize alınması sorununu çözen **otonom, kendi kendini iyileştiren (self-healing)** bir ses yönlendirme servisidir.
 
-Proje, gücünü doğrudan KernelSU / Magisk altyapısından alır ve Windows üzerinden çalışan gelişmiş bir komut satırı arayüzü (CLI) ile anlık olarak izlenip yönetilebilir.
+Proje, gücünü doğrudan KernelSU / Magisk altyapısından alır. İhtiyacınıza göre **Windows üzerinden çalışan komut satırı arayüzü (CLI)** ile veya **doğrudan cihaz üzerinden kontrol edilebilen Rootlu APK** ile yönetilebilir.
 
 ## 🚀 Öne Çıkan Özellikler
 
-* **Watchdog (Ölümsüz Motor):** Sistemdeki `logd` servisi çökse, log tamponu sıfırlansa veya sistem düşük bellek durumuna (LMK) düşse bile dış sarmal koruması sayesinde betik asla ölmez, saniyeler içinde kendini yeniden ayağa kaldırır.
+* **Rootlu APK Desteği:** Sistemin "ölümsüz" çekirdek mantığıyla birebir aynı çalışan, bilgisayara ihtiyaç duymadan doğrudan telefon üzerinden tek tuşla servisi yönetebileceğiniz, kayıtları izleyebileceğiniz yerleşik Android uygulaması (Root yetkisi gerektirir).
+* **Watchdog (Ölümsüz Motor):** İster script ister APK üzerinden çalışsın; sistemdeki `logd` servisi çökse, log tamponu sıfırlansa veya cihaz düşük bellek (LMK) durumuna düşse bile dış sarmal koruması devreye girer. Servis asla ölmez, saniyeler içinde kendini yeniden ayağa kaldırır.
 * **Sıfır Batarya Tüketimi:** "Blocking I/O" mantığıyla çalışır. Telefon boşta veya beklemedeyken CPU kullanmaz (%0). Sadece arama geldiğinde logcat üzerinden uyanıp devreye girer.
 * **Akıllı Algılama:** Görüşme ahize dışına (Bluetooth kulaklık veya hoparlör) aktarıldığında durumu algılar, zorunlu yönlendirmeyi durdurup uykuya geçer.
-* **Windows Yönetim Paneli:** Kurulum, kaldırma, tek seferlik teşhis raporu alma ve pürüzsüz canlı izleme işlemlerini tek bir `.bat` dosyasından yapmanızı sağlayan profesyonel arayüz.
+* **Gelişmiş Windows Paneli:** Bilgisayar başındayken kurulum, kaldırma ve pürüzsüz canlı izleme işlemlerini tek bir `.bat` dosyasından yapmanızı sağlayan profesyonel arayüz.
 
 ## 📂 Dosya Yapısı
 
-* `AHIZE.bat` - Tüm sistemi yöneten ana Windows kontrol paneli.
-* `ahize_tazele.sh` - Cihazın `service.d` dizininde çalışan çekirdek (watchdog korumalı) kabuk betiği.
+* `AhizeTazeleme.apk` - Cihaz üzerinden bilgisayarsız yönetim sağlayan root yetkili Android uygulaması.
+* `AHIZE.bat` - Tüm sistemi bilgisayar üzerinden yöneten ana Windows kontrol paneli.
+* `ahize_tazele.sh` - Cihazın arka planında (veya APK içinde) çalışan çekirdek kabuk betiği.
 * `canli.ps1` - PowerShell tabanlı, sistemi ve çağrı durumunu anlık (2 saniyede bir) renkli olarak raporlayan canlı izleme monitörü.
-* `tani.sh` - Cihaz üzerinden anlık ses durumu ve süreç raporlarını toplayan teşhis aracı.
-* `durdur.sh` - Cihazdaki arka plan sürecini güvenle uyutan yardımcı betik.
+* `tani.sh` & `durdur.sh` - Anlık ses durumu/süreç raporlarını toplayan ve sistemi güvenle uyutan teşhis/yönetim araçları.
 
 ## 🛠️ Gereksinimler
 
-1. **Root Erişimi:** Cihazda KernelSU (KSU) veya Magisk kurulu olmalıdır (`/data/adb/service.d/` dizini kullanılır).
-2. **Platform Tools:** Windows bilgisayarınızda ADB (Android Debug Bridge) kurulu olmalıdır.
-3. **USB Hata Ayıklama:** Geliştirici seçeneklerinden aktif edilmiş olmalıdır.
+1. **Root Erişimi:** Cihazda KernelSU (KSU) veya Magisk kurulu olmalıdır (Script sürümü `/data/adb/service.d/` dizinini, APK sürümü ise doğrudan root kabuğunu kullanır).
+2. **Platform Tools (Sadece PC Sürümü İçin):** Windows üzerinden kullanım için bilgisayarınızda ADB kurulu ve USB Hata Ayıklama aktif olmalıdır.
 
 ## ⚙️ Kurulum ve Kullanım
 
+Kullanım senaryonuza göre iki farklı yöntemden birini seçebilirsiniz:
+
+### Yöntem 1: Rootlu APK ile (Önerilen / Bağımsız Kullanım)
+1. Paketteki `AhizeTazeleme.apk` dosyasını cihazınıza kopyalayıp kurun.
+2. Uygulamayı açtığınızda ekrana gelen **Root (Superuser) izni** isteğini onaylayın.
+3. Uygulama arayüzü üzerinden servisi başlatabilir, durdurabilir ve sistem loglarını canlı olarak cihazınızın ekranından takip edebilirsiniz.
+
+### Yöntem 2: Windows Paneli ile (Geliştirici / PC Üzerinden)
 1. Cihazınızı USB kablosuyla bilgisayara bağlayın.
 2. Klasör içindeki `AHIZE.bat` dosyasını çalıştırın.
-3. Menüden **[2] Kur / güncelle ve başlat** seçeneğini tuşlayın.
-4. Sistem `ahize_tazele.sh` betiğini otomatik olarak cihazın başlangıç dizinine yükleyecek ve arka planda başlatacaktır (Cihaz her yeniden başladığında servis otomatik devreye girer).
-
-### Kontrol Paneli Seçenekleri:
-Paneli kullanarak **[1] Canlı Durum Ekranı**'na girebilir, cihazdaki görüşmeleri, servisin anlık durumunu ve tazeleme kayıtlarını (log akışını) ESC tuşuyla çıkılabilen profesyonel bir ekrandan izleyebilirsiniz. Olası sorunlarda **[6] Teşhis raporu al** seçeneği ile sistemin röntgenini çekebilirsiniz.
+3. Menüden **[2] Kur / güncelle ve başlat** seçeneğini tuşlayarak ölümsüz servisi cihazınıza entegre edin.
+4. **[1] Canlı Durum Ekranı**'na girerek cihazdaki görüşmeleri, servisin anlık durumunu ve tazeleme kayıtlarını ESC tuşuyla çıkılabilen profesyonel bir ekrandan izleyebilirsiniz.
 
 ## ⚠️ Önemli Notlar / Optimizasyon
-* **Pil Tasarrufu:** Sistem modifikasyonu olduğu için cihazınızdaki pil tasarrufu kısıtlamalarına takılmamasına rağmen, terminal/shell süreçlerinin optimizasyon harici (Unrestricted) bırakıldığından emin olmanız önerilir.
-* **Log Rotasyonu:** Betik, kendi ürettiği `/data/local/tmp/tazeleme.log` dosyasının şişmesini engellemek için her 60 döngüde bir dosyayı otomatik kırparak disk alanını korur. Dilerseniz `.bat` menüsünden **[7]** ile logları manuel olarak da silebilirsiniz.
+* **Pil Tasarrufu:** Sistem kök yetkilerle çalışsa da, Xiaomi/HyperOS gibi agresif arayüzlerde APK'nın veya terminal süreçlerinin pil optimizasyonundan muaf tutulması (Kısıtlanmadı / Unrestricted) önerilir.
+* **Log Rotasyonu:** Betik, kendi ürettiği log dosyasının şişmesini engellemek için her 60 döngüde bir dosyayı otomatik kırparak disk alanını korur.
 
 ---
 *Endüstriyel seviyede kararlılık hedeflenerek tasarlanmıştır.*
