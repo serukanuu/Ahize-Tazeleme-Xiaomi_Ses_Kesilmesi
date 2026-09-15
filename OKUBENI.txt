@@ -1,0 +1,117 @@
+AHIZE TAZELEME PANELI - v4.3
+============================
+
+Dosyalar (hepsi ayni klasorde kalmali):
+  AHIZE.bat        - PC yonetim paneli. Cift tikla calistir.
+  canli.ps1        - Canli durum ekrani (panelden 1 numara).
+  ahize_tazele.sh  - Telefonda calisan servis.
+  durdur.sh        - Servisi ve ona bagli logcat surecini birlikte durdurur.
+  tani.sh          - Teshis raporu (panelden 6 numara).
+
+KURULUM
+-------
+1. Telefonda USB hata ayiklama acik olsun, PC'ye bagla.
+2. AHIZE.bat'i cift tikla.
+3. Menuden 2 (Kur / guncelle ve baslat) sec.
+4. Telefonda su izni istegi cikarsa onayla.
+
+Servis KernelSU ile her yeniden baslatmada kendiliginden acilir.
+
+DOGRULAMA
+---------
+- Menu 6 (Teshis): "4. YETIM LOGCAT SURECLERI" bolumu servis calisirken
+  tek satir gostermeli, servis durdurulduktan sonra bos olmali.
+- Menu 1 (Canli durum): arama sirasinda ahizede iken SERVIS/GORUSME/CIKIS
+  satirlarinin ucu de yesil olmali ve TAZELEME sayaci 2 saniyede bir artmali.
+- Log'da arama basinda "GORUSME BASLADI" ve "Ahize - Tazeleme Devrede",
+  arama sonunda "GORUSME BITTI" gorunmeli.
+
+NASIL CALISIR
+-------------
+BEKLEME: logcat'te SADECE arama durumu olaylari beklenir
+(MODE_IN_CALL, CALL_STATE, onCallStateChanged, PreciseCallState). Surec
+read() uzerinde bloke bekler; dongu donmez, alarm kurulmaz, wakelock
+TUTULMAZ. Bu yuzden telefonun uykuya girmesini engellemez ve uykuda
+maliyeti fiilen sifirdir.
+
+OLAY GELDIGINDE: 3 saniyelik debounce'tan gecen ilk satir icin tek bir
+dumpsys audio cekilir ve "Actual mode = MODE_IN_CALL" dogrulanir.
+
+GORUSME ICINDE: 2 saniyede bir "Active communication device type:earpiece"
+kontrol edilir. Ahizedeyse "cmd telecom set-audio-route EARPIECE"
+gonderilir. Zaten ahizede oldugu icin route degismez, sadece ses yolu
+yeniden kurulur; canli gorusmede tamamen sessizdir. Hoparlor/BT'ye
+gecilirse tazeleme duraklar, ahizeye donunce kendiliginden devam eder.
+Arama bitince beklemeye donulur.
+
+Amac kesintiyi ONLEMEK degil, SURESINI 2 saniyeye indirmektir.
+
+AYARLAR (ahize_tazele.sh basi)
+------------------------------
+  ARALIK=2        gorusme icinde tazeleme araligi (saniye)
+  DEBOUNCE=3      ayni olay firtinasinda en fazla bu siklikta dumpsys
+  MAXLOG=2000000  log bu boyutu gecince son 2000 satira budanir
+
+v4.3 - BATARYA OPTIMIZASYONU
+----------------------------
+1. Kapi zili daraltildi. Onceki surum setAudioPatch ve earpiece kaliplarini
+   da dinliyordu; bunlar bildirim sesi, muzik ve video gibi arama DISI ses
+   olaylarina da takiliyor ve her takilmada pahali bir dumpsys audio
+   cagrisi yapiliyordu. Artik sadece arama durumu olaylari kapiyi caliyor.
+2. 3 saniyelik debounce eklendi. Arama basinda bu satirlar onlarca kez
+   akiyor; artik her biri icin dumpsys cekilmiyor.
+3. Hoparlore gecince ic donguden CIKILMIYOR. Onceki surum cikiyor ve
+   ahizeye donusu yakalamak icin yeni bir log olayina ihtiyac duyuyordu.
+   Artik gorusme boyunca ic donguda kalinir; daraltilmis filtre yuzunden
+   olusabilecek yakalama boslugu bu sayede kapandi.
+4. Log daha sakin: her tazeleme yerine sadece durum degisimleri
+   ("Ahize - Tazeleme Devrede" / "Ahize Disi - Beklemede") ve her 30
+   tazelemede bir "OK n" satiri yazilir.
+
+Tespit guvenilirligi dusmedi: arama baslarken MODE_IN_CALL / CALL_STATE
+satirlari kesinlikle loglaniyor. Tazeleme mantigi ve komutu aynen korundu.
+
+v4.2 - DUZELTILEN HATALAR
+-------------------------
+1. canli.ps1 artik ahize_durum.txt dosyasini dogru okuyor. Onceki surum
+   uretilmeyen ___MODE___/___DEV___/___CNT___ bolumlerini ariyordu, bu
+   yuzden gorusme aktifken bile "yok" gosteriyordu.
+2. Servis setsid ile baslatilip surec GRUBU olarak durduruluyor. Onceki
+   "pkill -f ahize_tazele.sh" yetim logcat surecleri birakiyordu.
+   Script icinde de trap 'kill 0' TERM var.
+3. Tazeleme sayaci /data/local/tmp/ahize_sayac.txt dosyasinda tutuluyor.
+   Onceki surumde sayac boru hattinin alt kabugunda kaliyor ve logcat
+   koptugunda sifirlaniyordu.
+4. tani.sh artik sayaci dosyadan okuyor. Onceki "grep -c OK" daima 0
+   donuyordu cunku per-tazeleme log satiri kaldirilmisti.
+5. Satir sonu duzeltmesi sed yerine tr -d '\r' ile yapiliyor (toybox'ta
+   daha guvenilir).
+6. Konsol 40 satira cikarildi; canli ekran 34 satira sigmiyordu.
+7. logcat kopmasi sonsuz sarmalla karsilaniyor, 5 saniye sonra yeniden
+   baglaniyor.
+
+LOG VE DOSYA YERLERI (telefon)
+------------------------------
+  /data/adb/service.d/ahize_tazele.sh   servis (onyukleme)
+  /data/local/tmp/tazeleme.log          kayit
+  /data/local/tmp/ahize_durum.txt       anlik durum
+  /data/local/tmp/ahize_sayac.txt       toplam tazeleme sayisi
+  /data/local/tmp/ahize.pid             surec grubu kimligi
+
+BILINEN TUZAKLAR
+----------------
+- "Active communication device" gorusme bitince temizlenmez, ahize
+  degerinde kalir. Tek basina "arama var mi" gostergesi olarak
+  kullanilamaz; mutlaka "Actual mode = MODE_IN_CALL" ile birlikte kontrol
+  edilmeli.
+- tinymix contents ve tinymix get bu cihazda desteklenmiyor.
+- .bat icinde su -c '...' komutlarinda | ve ic ice cift tirnak bozulur.
+  Karmasik komutlar bu yuzden .sh dosyasina yazilip push ediliyor.
+- root ile /sdcard'a yazilan dosyalar FUSE goruniminde 0 bayt okunur;
+  gercek veri /data/media/0/... altinda.
+
+ACIK SORU
+---------
+Tazelemenin gercek bir kesinti aninda sesi GERI GETIRDIGI henuz
+kanitlanmadi. Sadece zararsizligi kanitlandi. Kesinti olursa saatini not
+et, log'dan o anda servisin calistigi teyit edilebilir.

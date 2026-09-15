@@ -1,0 +1,38 @@
+09-15 14:09:06 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:11 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:16 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:21 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:26 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:31 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:37 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:42 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:47 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:52 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:09:57 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:02 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:07 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:12 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:17 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:22 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:27 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:32 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:37 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:42 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:48 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:53 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:10:58 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:11:03 !!! logcat koptu, yeniden baglaniyor !!!
+09-15 14:11:13 === baslangic PID 22853 v5.1 Olay Tabanli (kabuk /data/adb/service.d/ahize_tazele.sh, lb='') ===
+09-15 14:12:22 === baslangic PID 3203 v5.1 Olay Tabanli (kabuk /data/adb/service.d/ahize_tazele.sh, lb='') ===
+09-15 14:23:13 --- GORUSME BASLADI (Ahize) ---
+09-15 14:23:13 Ahize - Tazeleme Devrede
+09-15 14:23:51 --- GORUSME BITTI ---
+09-15 14:23:54 --- GORUSME BASLADI (Ahize) ---
+09-15 14:23:54 Ahize - Tazeleme Devrede
+09-15 14:24:20 OK 30
+09-15 14:24:24 --- GORUSME BITTI ---
+09-15 14:24:57 --- GORUSME BASLADI (Ahize) ---
+09-15 14:24:57 Ahize - Tazeleme Devrede
+09-15 14:25:55 --- GORUSME BITTI ---
+09-15 15:28:14 === baslangic PID 14958 v5.1 Olay Tabanli (kabuk /data/adb/service.d/ahize_tazele.sh, lb='') ===
+09-15 15:29:14 === baslangic PID 3172 v5.1 Olay Tabanli (kabuk /data/adb/service.d/ahize_tazele.sh, lb='') ===
